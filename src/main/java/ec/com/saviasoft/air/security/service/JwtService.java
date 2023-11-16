@@ -1,7 +1,6 @@
 package ec.com.saviasoft.air.security.service;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -19,7 +18,6 @@ import java.util.function.Function;
 public class JwtService {
 
     //SF6p4RPo5LzjZC2oae2SswM3whO37G9M
-
     private static final String SECRET_KEY = "534636703452506f354c7a6a5a43326f6165325373774d3377684f333747394d";
 
     public String extractUsername(String token) {
@@ -38,13 +36,13 @@ public class JwtService {
     public String generateToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
-    ) {
+        ) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24 ))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) // 1 day
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

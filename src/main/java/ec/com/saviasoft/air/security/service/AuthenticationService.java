@@ -1,22 +1,28 @@
 package ec.com.saviasoft.air.security.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ec.com.saviasoft.air.security.data.UserRepository;
 import ec.com.saviasoft.air.security.model.pojo.Role;
 import ec.com.saviasoft.air.security.model.pojo.User;
 import ec.com.saviasoft.air.security.model.request.LoginRequest;
 import ec.com.saviasoft.air.security.model.request.RegisterRequest;
 import ec.com.saviasoft.air.security.model.response.AuthenticationResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final UserRepository userService;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -30,7 +36,7 @@ public class AuthenticationService {
                 .role(Role.CUSTOMER)
                 .build();
 
-        userService.save(user);
+        userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
 
@@ -47,7 +53,7 @@ public class AuthenticationService {
                     loginRequest.getPassword()
             ));
 
-        var user = userService.findByEmail(loginRequest.getEmail())
+        var user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         var jwtToken = jwtService.generateToken(user);
@@ -56,4 +62,5 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
+
 }
