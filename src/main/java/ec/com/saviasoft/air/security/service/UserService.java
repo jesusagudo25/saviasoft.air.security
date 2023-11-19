@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,42 @@ public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+
+    public List<User> getUsers() {
+        return repository.findAll();
+    }
+
+    public User getUser(Integer id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public User createUser(User user) {
+        return repository.save(user);
+    }
+
+    public User updateUser(Integer id, User user) {
+        User userToUpdate = repository.findById(id).orElse(null);
+        if (userToUpdate != null) {
+            userToUpdate.setEmail(user.getEmail());
+            userToUpdate.setFirstName(user.getFirstName());
+            userToUpdate.setLastName(user.getLastName());
+            userToUpdate.setRole(user.getRole());
+
+            return repository.save(userToUpdate);
+        } else {
+            return null;
+        }
+    }
+
+    public User setStatus(Integer id, Boolean status) {
+        User userToUpdate = repository.findById(id).orElse(null);
+        if (userToUpdate != null) {
+            userToUpdate.setStatus(status);
+            return repository.save(userToUpdate);
+        } else {
+            return null;
+        }
+    }
 
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
