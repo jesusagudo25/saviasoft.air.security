@@ -23,9 +23,9 @@ public class EmailUtil {
         mimeMessageHelper.setSubject("Reset Password");
         mimeMessageHelper.setText("""
             <div>
-              <a href="http://localhost:3030/reset-password?email=%s&token=%s" target="_blank">click link to reset password</a>
+              <a href="http://localhost:3030/reset-password/%s" target="_blank">click link to reset password</a>
             </div>
-            """.formatted(email, token), true);
+            """.formatted(token), true);
 
         javaMailSender.send(mimeMessage);
     }

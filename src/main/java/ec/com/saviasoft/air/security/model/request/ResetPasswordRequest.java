@@ -1,12 +1,11 @@
 package ec.com.saviasoft.air.security.model.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResetPasswordRequest {
@@ -14,4 +13,6 @@ public class ResetPasswordRequest {
     private String token;
 
     private String password;
+
+    private String passwordConfirm;
 }

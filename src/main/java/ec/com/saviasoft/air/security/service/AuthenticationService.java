@@ -60,6 +60,7 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .id(user.getId())
                 .build();
     }
 
@@ -78,6 +79,7 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .id(user.getId())
                 .build();
     }
 
@@ -105,7 +107,12 @@ public class AuthenticationService {
         return "Email sent... please reset password within 1 minute";
     }
 
-    public AuthenticationResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
+    public Boolean resetPassword(ResetPasswordRequest resetPasswordRequest) {
+
+        if(!resetPasswordRequest.getPassword().equals(resetPasswordRequest.getPasswordConfirm())) {
+            throw new RuntimeException("Password and confirm password does not match");
+        }
+
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(resetPasswordRequest.getToken())
                 .orElseThrow(() -> new RuntimeException("Invalid token"));
 
@@ -121,11 +128,7 @@ public class AuthenticationService {
 
         passwordResetTokenRepository.delete(passwordResetToken);
 
-        var jwtToken = jwtService.generateToken(user);
-
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+        return true;
     }
 
     private boolean isBefore(long expiryDate, long currentDate) {

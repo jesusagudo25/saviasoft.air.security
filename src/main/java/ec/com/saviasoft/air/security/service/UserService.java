@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +55,22 @@ public class UserService {
         }
     }
 
+    public User changePassword(Integer id, Map<String, String> payload) {
+
+        if(!payload.get("password").equals(payload.get("passwordConfirm"))) {
+            throw new IllegalStateException("Password are not the same");
+        }
+
+        User userToUpdate = repository.findById(id).orElse(null);
+        if (userToUpdate != null) {
+            userToUpdate.setPassword(passwordEncoder.encode(payload.get("password")));
+            return repository.save(userToUpdate);
+        } else {
+            throw new IllegalStateException("User not found");
+        }
+    }
+
+    /*
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -72,5 +89,5 @@ public class UserService {
 
         // save the new password
         repository.save(user);
-    }
+    }*/
 }

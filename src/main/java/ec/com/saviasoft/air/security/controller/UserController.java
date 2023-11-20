@@ -54,7 +54,7 @@ public class UserController {
        }
     }
 
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<User> setStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> payload) {
        try {
            return ResponseEntity.ok(service.setStatus(id, payload.get("status")));
@@ -63,12 +63,21 @@ public class UserController {
        }
     }
 
-    @PatchMapping("/changePassword")
+    @PatchMapping("/{id}/change-password")
+    public ResponseEntity<User> changePassword(@PathVariable Integer id, @RequestBody Map<String, String> payload) {
+       try {
+           return ResponseEntity.ok(service.changePassword(id, payload));
+       } catch (Exception e) {
+           return ResponseEntity.badRequest().build();
+       }
+    }
+
+    /*@PatchMapping("/changePassword")
     public ResponseEntity<?> changePassword(
           @RequestBody ChangePasswordRequest request,
           Principal connectedUser
     ) {
         service.changePassword(request, connectedUser);
         return ResponseEntity.ok().build();
-    }
+    }*/
 }

@@ -1,5 +1,6 @@
 package ec.com.saviasoft.air.security.controller;
 
+import ec.com.saviasoft.air.security.model.pojo.User;
 import ec.com.saviasoft.air.security.model.request.LoginRequest;
 import ec.com.saviasoft.air.security.model.request.RegisterRequest;
 import ec.com.saviasoft.air.security.model.request.ResetPasswordRequest;
@@ -43,7 +44,7 @@ public class AuthenticationController {
     }
 
     @PatchMapping("/reset-password")
-    public ResponseEntity<AuthenticationResponse> resetPassword(
+    public ResponseEntity<Boolean> resetPassword(
             @RequestBody ResetPasswordRequest resetPasswordRequest
     ) {
         return ResponseEntity.ok(authenticationService.resetPassword(resetPasswordRequest));
