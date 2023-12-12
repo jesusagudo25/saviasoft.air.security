@@ -37,12 +37,13 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
         ) {
+        //1 day
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) // 1 day
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) //1 day
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

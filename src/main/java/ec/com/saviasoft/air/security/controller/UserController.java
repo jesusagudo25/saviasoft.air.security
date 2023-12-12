@@ -2,6 +2,7 @@ package ec.com.saviasoft.air.security.controller;
 
 import ec.com.saviasoft.air.security.model.pojo.User;
 import ec.com.saviasoft.air.security.model.request.ChangePasswordRequest;
+import ec.com.saviasoft.air.security.model.request.RegisterRequest;
 import ec.com.saviasoft.air.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody RegisterRequest user) {
        try {
            return ResponseEntity.ok(service.createUser(user));
        } catch (Exception e) {

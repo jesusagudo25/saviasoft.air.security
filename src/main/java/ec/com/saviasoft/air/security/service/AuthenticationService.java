@@ -48,7 +48,7 @@ public class AuthenticationService {
                 .lastName(registerRequest.getLastName())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .role(Role.CUSTOMER)
+                .role(registerRequest.getRole())
                 .status(true)
                 .createdDate(new Date())
                 .updatedDate(new Date())
@@ -61,6 +61,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .id(user.getId())
+                .role(user.getRole())
                 .build();
     }
 
@@ -80,6 +81,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .id(user.getId())
+                .role(user.getRole())
                 .build();
     }
 

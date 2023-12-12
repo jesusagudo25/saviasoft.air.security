@@ -3,18 +3,30 @@ package ec.com.saviasoft.air.security.service;
 import ec.com.saviasoft.air.security.data.UserRepository;
 import ec.com.saviasoft.air.security.model.pojo.User;
 import ec.com.saviasoft.air.security.model.request.ChangePasswordRequest;
+import ec.com.saviasoft.air.security.model.request.RegisterRequest;
+import ec.com.saviasoft.air.security.util.EmailUtil;
+import ec.com.saviasoft.air.security.util.PasswordUtil;
+import ec.com.saviasoft.air.security.util.TokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    @Autowired
+    private PasswordUtil passwordUtil;
+
+    @Autowired
+    private EmailUtil emailUtil;
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -27,8 +39,27 @@ public class UserService {
         return repository.findById(id).orElse(null);
     }
 
-    public User createUser(User user) {
-        return repository.save(user);
+    public User createUser(RegisterRequest registerRequest) {
+
+        String password = passwordUtil.generateRandomPassword();
+
+        // send email with password
+        try {
+            emailUtil.sendUserCredentials(registerRequest.getEmail(), password);
+        } catch (Exception e) {
+            throw new IllegalStateException("Error sending email");
+        }
+
+        return repository.save(User.builder()
+                .firstName(registerRequest.getFirstName())
+                .lastName(registerRequest.getLastName())
+                .email(registerRequest.getEmail())
+                .password(passwordEncoder.encode(password))
+                .role(registerRequest.getRole())
+                .createdDate(new Date())
+                .updatedDate(new Date())
+                .status(true)
+                .build());
     }
 
     public User updateUser(Integer id, User user) {
@@ -38,6 +69,7 @@ public class UserService {
             userToUpdate.setFirstName(user.getFirstName());
             userToUpdate.setLastName(user.getLastName());
             userToUpdate.setRole(user.getRole());
+            userToUpdate.setUpdatedDate(new Date());
 
             return repository.save(userToUpdate);
         } else {
@@ -49,6 +81,7 @@ public class UserService {
         User userToUpdate = repository.findById(id).orElse(null);
         if (userToUpdate != null) {
             userToUpdate.setStatus(status);
+            userToUpdate.setUpdatedDate(new Date());
             return repository.save(userToUpdate);
         } else {
             return null;
@@ -64,6 +97,7 @@ public class UserService {
         User userToUpdate = repository.findById(id).orElse(null);
         if (userToUpdate != null) {
             userToUpdate.setPassword(passwordEncoder.encode(payload.get("password")));
+            userToUpdate.setUpdatedDate(new Date());
             return repository.save(userToUpdate);
         } else {
             throw new IllegalStateException("User not found");

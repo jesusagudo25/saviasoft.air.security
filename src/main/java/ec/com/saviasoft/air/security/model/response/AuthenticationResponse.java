@@ -1,5 +1,6 @@
 package ec.com.saviasoft.air.security.model.response;
 
+import ec.com.saviasoft.air.security.model.pojo.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +15,6 @@ public class AuthenticationResponse {
     private String token;
 
     private Integer id;
+
+    private Role role;
 }
