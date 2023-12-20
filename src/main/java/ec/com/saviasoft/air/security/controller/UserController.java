@@ -1,7 +1,7 @@
 package ec.com.saviasoft.air.security.controller;
 
 import ec.com.saviasoft.air.security.model.pojo.User;
-import ec.com.saviasoft.air.security.model.request.ChangePasswordRequest;
+import ec.com.saviasoft.air.security.model.request.ChangeUserPasswordRequest;
 import ec.com.saviasoft.air.security.model.request.RegisterRequest;
 import ec.com.saviasoft.air.security.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -9,23 +9,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService service;
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
-       try {
-           return ResponseEntity.ok(service.getUsers());
-       } catch (Exception e) {
-           return ResponseEntity.badRequest().build();
-       }
+    public ResponseEntity<List<User>> getUsers(
+            @RequestParam (required = false) String name
+    ) {
+        List<User> userList;
+
+        if (name != null) {
+            userList = service.findByName(name);
+        } else {
+            userList = service.getUsers();
+        }
+
+        if (Objects.nonNull(userList)) {
+            return ResponseEntity.ok(userList);
+        } else {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
     }
 
     @GetMapping("/{id}")
@@ -73,12 +85,16 @@ public class UserController {
        }
     }
 
-    /*@PatchMapping("/changePassword")
-    public ResponseEntity<?> changePassword(
-          @RequestBody ChangePasswordRequest request,
-          Principal connectedUser
+    @PatchMapping
+    public ResponseEntity<?> userChangePassword(
+            @RequestBody ChangeUserPasswordRequest request,
+            Principal connectedUser
     ) {
-        service.changePassword(request, connectedUser);
-        return ResponseEntity.ok().build();
-    }*/
+        try {
+            return ResponseEntity.ok(service.userChangePassword(request, connectedUser));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

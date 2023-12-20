@@ -1,5 +1,6 @@
 package ec.com.saviasoft.air.security.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,13 +11,17 @@ import java.util.Properties;
 @Configuration
 public class EmailConfig {
 
-    private final String mailHost = "smtp.gmail.com";
+    @Value("${saviasoft.email.host}")
+    private String mailHost;
 
-    private final String mailPort = "587";
+    @Value("${saviasoft.email.port}")
+    private String mailPort;
 
-    private final String mailUsername = "seminario1fiec@gmail.com";
+    @Value("${saviasoft.email.username}")
+    private String mailUsername;
 
-    private final String mailPassword = "htgqxdxdfyreehxg";
+    @Value("${saviasoft.email.password}")
+    private String mailPassword;
 
     @Bean
     public JavaMailSender getJavaMailSender() {

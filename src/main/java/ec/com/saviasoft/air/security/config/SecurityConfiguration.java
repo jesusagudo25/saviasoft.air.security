@@ -1,6 +1,7 @@
 package ec.com.saviasoft.air.security.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -21,6 +22,9 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    @Value("${saviasoft.app.frontend.url}")
+    private String frontendUrl;
+
     @Bean
     public SecurityFilterChain securityFilterChain(
         HttpSecurity http
@@ -31,7 +35,7 @@ public class SecurityConfiguration {
             .cors()
             .configurationSource(request -> {
                 CorsConfiguration corsConfiguration = new CorsConfiguration();
-                corsConfiguration.addAllowedOrigin("http://localhost:3030");
+                corsConfiguration.addAllowedOrigin(frontendUrl);
                 corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization"));
                 corsConfiguration.setAllowCredentials(true);
@@ -39,7 +43,7 @@ public class SecurityConfiguration {
             })
             .and()
             .authorizeHttpRequests()
-            .requestMatchers("/api/v1/auth/**")
+            .requestMatchers("/auth/**")
             .permitAll()
             .anyRequest()
             .authenticated()

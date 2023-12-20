@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/security
-    username: postgres
-    password: panama09
+    username: airq
+    password: airq
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -13,5 +13,31 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: ms-security
+
 server:
-  port: 8080
+  port: 8087
+
+## Configuracion del cliente de Eureka
+eureka:
+  instance:
+    preferIpAddress: false
+    hostname: ${HOSTNAME:ms-security}
+    non-secure-port-enabled: false
+    secure-port-enabled: true
+    non-secure-port: 80
+    secure-port: 443
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+
+saviasoft:
+  app:
+    frontend:
+      url: ${FRONTEND_URL:http://localhost:3030}
+  email:
+    host: smtp.gmail.com
+    port: 587
+    username: seminario1fiec@gmail.com
+    password: htgqxdxdfyreehxg
