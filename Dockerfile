@@ -16,5 +16,5 @@ RUN mvn clean package
 # Marcamos el punto de arranque de la imagen con el comando "java -jar app.jar" que ejecutará nuestro componente.
 FROM openjdk:17
 EXPOSE 8087
-COPY --from=build /target/ms-security-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /target/security-0.0.1-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
