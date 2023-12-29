@@ -18,7 +18,7 @@ public class EmailUtil {
     @Autowired
     private SpringTemplateEngine templateEngine;
 
-    public void sendForgotPasswordEmail(String email, String token) throws MessagingException {
+    public void sendForgotPasswordEmail(String email, String token, String frontEndUrl) throws MessagingException {
 
         //Thymeleaf template, see https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#template-layout
 
@@ -28,6 +28,7 @@ public class EmailUtil {
         Context context = new Context();
         context.setVariable("token", token);
         context.setVariable("email", email);
+        context.setVariable("frontEndUrl", frontEndUrl);
 
         String html = templateEngine.process("user/resetPassword", context);
 
@@ -38,7 +39,7 @@ public class EmailUtil {
         javaMailSender.send(mimeMessage);
     }
 
-    public void sendUserCredentials(String email, String password) throws MessagingException {
+    public void sendUserCredentials(String email, String password, String frontEndUrl) throws MessagingException {
 
         //Thymeleaf template, see https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#template-layout
 
@@ -48,6 +49,7 @@ public class EmailUtil {
         Context context = new Context();
         context.setVariable("password", password);
         context.setVariable("email", email);
+        context.setVariable("frontEndUrl", frontEndUrl);
 
         String html = templateEngine.process("user/welcome", context);
 

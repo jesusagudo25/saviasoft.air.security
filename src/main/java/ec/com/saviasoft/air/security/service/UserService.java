@@ -5,11 +5,13 @@ import ec.com.saviasoft.air.security.model.pojo.User;
 import ec.com.saviasoft.air.security.model.request.ChangePasswordRequest;
 import ec.com.saviasoft.air.security.model.request.ChangeUserPasswordRequest;
 import ec.com.saviasoft.air.security.model.request.RegisterRequest;
+import ec.com.saviasoft.air.security.model.response.AuthenticationResponse;
 import ec.com.saviasoft.air.security.util.EmailUtil;
 import ec.com.saviasoft.air.security.util.PasswordUtil;
 import ec.com.saviasoft.air.security.util.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,8 +31,13 @@ public class UserService {
     @Autowired
     private EmailUtil emailUtil;
 
+    @Value("${saviasoft.app.frontend.url}")
+    private String frontEndUrl;
+
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+
+    private final JwtService jwtService;
 
     public List<User> getUsers() {
         return repository.findAll();
@@ -50,7 +57,7 @@ public class UserService {
 
         // send email with password
         try {
-            emailUtil.sendUserCredentials(registerRequest.getEmail(), password);
+            emailUtil.sendUserCredentials(registerRequest.getEmail(), password, frontEndUrl);
         } catch (Exception e) {
             throw new IllegalStateException("Error sending email");
         }
@@ -67,17 +74,33 @@ public class UserService {
                 .build());
     }
 
-    public User updateUser(Integer id, User user) {
-        User userToUpdate = repository.findById(id).orElse(null);
-        if (userToUpdate != null) {
-            userToUpdate.setEmail(user.getEmail());
-            userToUpdate.setFirstName(user.getFirstName());
-            userToUpdate.setLastName(user.getLastName());
-            userToUpdate.setRole(user.getRole());
-            userToUpdate.setUpdatedDate(new Date());
+    public AuthenticationResponse updateUser(Integer id, User user, Principal connectedUser) {
 
-            return repository.save(userToUpdate);
-        } else {
+        var userConnected = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        boolean flag = false;
+        User userToUpdate = repository.findById(id).orElse(null);
+
+        assert userToUpdate != null;
+        if(userConnected.getEmail().equals(userToUpdate.getEmail())) {
+            flag = true;
+        }
+
+        userToUpdate.setEmail(user.getEmail());
+        userToUpdate.setFirstName(user.getFirstName());
+        userToUpdate.setLastName(user.getLastName());
+        userToUpdate.setRole(user.getRole());
+        userToUpdate.setUpdatedDate(new Date());
+        repository.save(userToUpdate);
+
+        if(flag) {
+            var jwtToken = jwtService.generateToken(userToUpdate);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .id(userToUpdate.getId())
+                    .role(userToUpdate.getRole())
+                    .build();
+        }
+        else {
             return null;
         }
     }

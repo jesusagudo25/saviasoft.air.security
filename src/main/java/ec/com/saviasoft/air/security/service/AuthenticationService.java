@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,6 +36,9 @@ public class AuthenticationService {
 
     @Autowired
     private EmailUtil emailUtil;
+
+    @Value("${saviasoft.app.frontend.url}")
+    private String frontEndUrl;
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
@@ -95,7 +99,7 @@ public class AuthenticationService {
         String token = tokenUtil.generateToken();
 
         try {
-            emailUtil.sendForgotPasswordEmail(email, token);
+            emailUtil.sendForgotPasswordEmail(email, token, frontEndUrl);
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send email please try again");
         }

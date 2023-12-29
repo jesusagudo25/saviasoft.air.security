@@ -59,9 +59,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody User user, Principal connectedUser) {
        try {
-           return ResponseEntity.ok(service.updateUser(id, user));
+           return ResponseEntity.ok(service.updateUser(id, user, connectedUser));
        } catch (Exception e) {
            return ResponseEntity.badRequest().build();
        }
